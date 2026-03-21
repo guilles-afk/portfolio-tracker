@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Portfolio Tracker</title>
+</head>
+<body>
+  <h1>Portfolio Tracker</h1>
+
+  <input id="name" placeholder="Asset (bitcoin, AAPL, USD)">
+  <input id="type" placeholder="Type (crypto, stock, cash)">
+  <input id="quantity" type="number" placeholder="Quantity">
+  <button onclick="addAsset()">Add</button>
+
+  <h2>Assets</h2>
+  <div id="list"></div>
+
+  <h2>Total: $<span id="total">0</span></h2>
+
+  <script>
+    let assets = JSON.parse(localStorage.getItem("assets") || "[]");
+
+    function render() {
+      let list = document.getElementById("list");
+      list.innerHTML = "";
+      let total = 0;
+
+      assets.forEach(a => {
+        let value = (a.price || 0) * a.quantity;
+        total += value;
+
+        list.innerHTML += `<div>${a.name} (${a.type}) - $${value.toFixed(2)}</div>`;
+      });
+
+      document.getElementById("total").innerText = total.toFixed(2);
+      localStorage.setItem("assets", JSON.stringify(assets));
+    }
+
+    async function updatePrices() {
+      for (let a of assets) {
+        if (a.type === "crypto") {
+          try {
+            let res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${a.name}&vs_currencies=usd`);
+            let data = await res.json();
+            a.price = data[a.name]?.usd || 0;
+          } catch {}
+        }
+      }
+      render();
+    }
+
+    function addAsset() {
+      let name = document.getElementById("name").value;
+      let type = document.getElementById("type").value;
+      let quantity = parseFloat(document.getElementById("quantity").value);
+
+      if (!name || !quantity) return;
+
+      assets.push({ name, type, quantity, price: 0 });
+      render();
+    }
+
+    render();
+    updatePrices();
+    setInterval(updatePrices, 60000);
+  </script>
+</body>
+</html>
