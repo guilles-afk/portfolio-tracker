@@ -2,30 +2,40 @@
 <html>
 <head>
   <title>Portfolio Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-<body style="background:#0f172a;color:white;font-family:Arial;padding:20px;">
 
-<h1>Portfolio Tracker</h1>
+<body style="margin:0;background:#0f172a;font-family:Arial;color:white;">
 
-<input id="name" placeholder="BTC, ETH, AAPL, USD">
-<input id="quantity" type="number" placeholder="Cantidad">
-<select id="type">
-  <option value="crypto">Crypto</option>
-  <option value="stock">Stock</option>
-  <option value="cash">Cash</option>
-</select>
+<div style="max-width:600px;margin:auto;padding:20px;">
 
-<button onclick="addAsset()">Agregar</button>
+<h1 style="text-align:center;">Portfolio Tracker</h1>
 
-<h2>Assets</h2>
-<div id="list"></div>
+<div style="background:#1e293b;padding:15px;border-radius:12px;margin-bottom:20px;">
+  <input id="name" placeholder="BTC, ETH, AAPL, USD" style="width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:none;">
+  
+  <input id="quantity" type="number" placeholder="Cantidad" style="width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:none;">
+
+  <select id="type" style="width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:none;">
+    <option value="crypto">Crypto</option>
+    <option value="stock">Stock</option>
+    <option value="cash">Cash</option>
+  </select>
+
+  <button onclick="addAsset()" style="width:100%;padding:12px;border:none;border-radius:8px;background:#3b82f6;color:white;font-weight:bold;">
+    Agregar
+  </button>
+</div>
 
 <h2>Total: $<span id="total">0</span></h2>
+
+<div id="list"></div>
+
+</div>
 
 <script>
 let assets = JSON.parse(localStorage.getItem("assets") || "[]");
 
-// 🔥 MAPEOS AUTOMÁTICOS
 const cryptoMap = {
   BTC: "bitcoin",
   ETH: "ethereum",
@@ -37,7 +47,7 @@ const cryptoMap = {
   ADA: "cardano",
   DOGE: "dogecoin",
   MATIC: "polygon",
-  HYPE: "hyperliquid" // 👈 agregado
+  HYPE: "hyperliquid"
 };
 
 function normalizeCrypto(name) {
@@ -55,10 +65,15 @@ function render() {
     total += value;
 
     list.innerHTML += `
-      <div style="background:#1e293b;padding:10px;margin:5px;border-radius:8px;">
-        <b>${a.symbol}</b> (${a.type})<br>
-        ${a.quantity} × $${a.price || 0} = $${value.toFixed(2)}
-        <br><button onclick="removeAsset(${i})">❌</button>
+      <div style="background:#1e293b;padding:15px;margin-bottom:10px;border-radius:12px;display:flex;justify-content:space-between;">
+        <div>
+          <b>${a.symbol}</b><br>
+          ${a.quantity} × $${a.price || 0}
+        </div>
+        <div style="text-align:right;">
+          $${value.toFixed(2)}<br>
+          <button onclick="removeAsset(${i})" style="margin-top:5px;border:none;background:red;color:white;border-radius:6px;padding:5px 8px;">X</button>
+        </div>
       </div>
     `;
   });
@@ -70,7 +85,6 @@ function render() {
 async function updatePrices() {
   for (let a of assets) {
 
-    // 🔹 CRYPTO
     if (a.type === "crypto") {
       try {
         let res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${a.id}&vs_currencies=usd`);
@@ -79,7 +93,6 @@ async function updatePrices() {
       } catch {}
     }
 
-    // 🔹 STOCK
     if (a.type === "stock") {
       try {
         let res = await fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${a.symbol}`);
@@ -88,7 +101,6 @@ async function updatePrices() {
       } catch {}
     }
 
-    // 🔹 CASH
     if (a.type === "cash") {
       a.price = 1;
     }
