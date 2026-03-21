@@ -1,67 +1,151 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Portfolio Tracker</title>
-</head>
-<body>
-  <h1>Portfolio Tracker</h1>
+import React, { useState, useEffect } from "react";
 
-  <input id="name" placeholder="Asset (bitcoin, AAPL, USD)">
-  <input id="type" placeholder="Type (crypto, stock, cash)">
-  <input id="quantity" type="number" placeholder="Quantity">
-  <button onclick="addAsset()">Add</button>
+export default function PortfolioTracker() {
+  const [assets, setAssets] = useState(() => {
+    const saved = localStorage.getItem("assets");
+    return saved ? JSON.parse(saved) : [];
+  });
 
-  <h2>Assets</h2>
-  <div id="list"></div>
+  const [form, setForm] = useState({ name: "", type: "crypto", quantity: "" });
 
-  <h2>Total: $<span id="total">0</span></h2>
+  useEffect(() => {
+    localStorage.setItem("assets", JSON.stringify(assets));
+  }, [assets]);
 
-  <script>
-    let assets = JSON.parse(localStorage.getItem("assets") || "[]");
-
-    function render() {
-      let list = document.getElementById("list");
-      list.innerHTML = "";
-      let total = 0;
-
-      assets.forEach(a => {
-        let value = (a.price || 0) * a.quantity;
-        total += value;
-
-        list.innerHTML += `<div>${a.name} (${a.type}) - $${value.toFixed(2)}</div>`;
-      });
-
-      document.getElementById("total").innerText = total.toFixed(2);
-      localStorage.setItem("assets", JSON.stringify(assets));
-    }
-
-    async function updatePrices() {
-      for (let a of assets) {
-        if (a.type === "crypto") {
+  useEffect(() => {
+    const fetchPrices = async () => {
+      const updated = await Promise.all(
+        assets.map(async (asset) => {
           try {
-            let res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${a.name}&vs_currencies=usd`);
-            let data = await res.json();
-            a.price = data[a.name]?.usd || 0;
-          } catch {}
-        }
-      }
-      render();
-    }
+            // Crypto (CoinGecko)
+            if (asset.type === "crypto") {
+              const res = await fetch(
+                `https://api.coingecko.com/api/v3/simple/price?ids=${asset.name}&vs_currencies=usd`
+              );
+              const data = await res.json();
+              return { ...asset, price: data[asset.name]?.usd || 0 };
+            }
 
-    function addAsset() {
-      let name = document.getElementById("name").value;
-      let type = document.getElementById("type").value;
-      let quantity = parseFloat(document.getElementById("quantity").value);
+            // Stocks (simple Yahoo API via unofficial endpoint)
+            if (asset.type === "stock") {
+              const res = await fetch(
+                `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${asset.name}`
+              );
+              const data = await res.json();
+              const price = data.quoteResponse.result[0]?.regularMarketPrice || 0;
+              return { ...asset, price };
+            }
 
-      if (!name || !quantity) return;
+            // Cash
+            return { ...asset, price: 1 };
+          } catch {
+            return asset;
+          }
+        })
+      );
 
-      assets.push({ name, type, quantity, price: 0 });
-      render();
-    }
+      setAssets(updated);
+    };
 
-    render();
-    updatePrices();
-    setInterval(updatePrices, 60000);
-  </script>
-</body>
-</html>
+    fetchPrices();
+    const interval = setInterval(fetchPrices, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const addAsset = () => {
+    if (!form.name || !form.quantity) return;
+
+    setAssets([
+      ...assets,
+      {
+        ...form,
+        quantity: parseFloat(form.quantity),
+        price: 0,
+      },
+    ]);
+
+    setForm({ name: "", type: "crypto", quantity: "" });
+  };
+
+  const removeAsset = (index) => {
+    setAssets(assets.filter((_, i) => i !== index));
+  };
+
+  const total = assets.reduce((sum, a) => sum + (a.price || 0) * a.quantity, 0);
+
+  const grouped = {
+    crypto: 0,
+    stock: 0,
+    cash: 0,
+  };
+
+  assets.forEach((a) => {
+    const value = (a.price || 0) * a.quantity;
+    grouped[a.type] += value;
+  });
+
+  return (
+    <div style={{
+      background: "#0f172a",
+      minHeight: "100vh",
+      color: "white",
+      padding: "20px",
+      fontFamily: "Arial"
+    }}>
+      <h1 style={{ fontSize: "28px", marginBottom: "20px" }}>Portfolio Tracker</h1>
+
+      <div style={{
+        background: "#1e293b",
+        padding: "15px",
+        borderRadius: "12px",
+        marginBottom: "20px"
+      }}>
+        <input placeholder="Asset (bitcoin, AAPL, USD)" value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })} />
+
+        <select value={form.type}
+          onChange={(e) => setForm({ ...form, type: e.target.value })}>
+          <option value="crypto">Crypto</option>
+          <option value="stock">Stock</option>
+          <option value="cash">Cash</option>
+        </select>
+
+        <input type="number" placeholder="Quantity" value={form.quantity}
+          onChange={(e) => setForm({ ...form, quantity: e.target.value })} />
+
+        <button onClick={addAsset}>Add</button>
+      </div>
+
+      <div style={{ display: "grid", gap: "10px" }}>
+        {assets.map((a, i) => (
+          <div key={i} style={{
+            background: "#1e293b",
+            padding: "15px",
+            borderRadius: "12px",
+            display: "flex",
+            justifyContent: "space-between"
+          }}>
+            <div>
+              <strong>{a.name.toUpperCase()}</strong> ({a.type})<br />
+              {a.quantity} × ${a.price || 0}
+            </div>
+
+            <div>
+              ${((a.price || 0) * a.quantity).toFixed(2)}
+              <br />
+              <button onClick={() => removeAsset(i)}>❌</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ marginTop: "20px" }}>
+        <h2>Total: ${total.toFixed(2)}</h2>
+
+        <p>Crypto: ${grouped.crypto.toFixed(2)}</p>
+        <p>Stocks: ${grouped.stock.toFixed(2)}</p>
+        <p>Cash: ${grouped.cash.toFixed(2)}</p>
+      </div>
+    </div>
+  );
+}
