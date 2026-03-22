@@ -3,38 +3,399 @@
 <head>
   <title>Portfolio Tracker GUILLE Y MER</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #60a5fa, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .subtitle {
+      font-size: 14px;
+      color: #94a3b8;
+    }
+    
+    .input-section {
+      background: rgba(30, 41, 59, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 24px;
+      border-radius: 16px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      background: rgba(15, 23, 42, 0.6);
+      color: #e2e8f0;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: #60a5fa;
+      background: rgba(15, 23, 42, 0.9);
+      box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+    }
+    
+    input::placeholder {
+      color: #64748b;
+    }
+    
+    button {
+      width: 100%;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+    }
+    
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .stats-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .stat-card {
+      background: rgba(30, 41, 59, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #60a5fa;
+    }
+    
+    .total-card {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+      border: 1px solid rgba(96, 165, 250, 0.2);
+    }
+    
+    .total-value {
+      font-size: 32px;
+      color: #60a5fa;
+    }
+    
+    .assets-section {
+      margin-bottom: 24px;
+    }
+    
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+    
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+      animation: pulse 2s infinite;
+    }
+    
+    .status-dot.loading {
+      animation: pulse-loading 1s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    @keyframes pulse-loading {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.7; }
+    }
+    
+    .asset-item {
+      background: rgba(30, 41, 59, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      transition: all 0.2s;
+    }
+    
+    .asset-item:hover {
+      border-color: rgba(96, 165, 250, 0.2);
+      background: rgba(30, 41, 59, 0.9);
+    }
+    
+    .asset-info {
+      flex: 1;
+    }
+    
+    .asset-symbol {
+      font-size: 16px;
+      font-weight: 700;
+      color: #e2e8f0;
+      margin-bottom: 4px;
+    }
+    
+    .asset-details {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-bottom: 6px;
+    }
+    
+    .asset-type {
+      display: inline-block;
+      font-size: 11px;
+      padding: 4px 8px;
+      background: rgba(96, 165, 250, 0.1);
+      color: #60a5fa;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    
+    .asset-value {
+      text-align: right;
+    }
+    
+    .asset-price {
+      font-size: 16px;
+      font-weight: 700;
+      color: #60a5fa;
+      margin-bottom: 6px;
+    }
+    
+    .price-loading {
+      font-size: 12px;
+      color: #f59e0b;
+      margin-bottom: 6px;
+    }
+    
+    .price-error {
+      font-size: 12px;
+      color: #ef4444;
+      margin-bottom: 6px;
+    }
+    
+    .remove-btn {
+      padding: 6px 10px;
+      font-size: 12px;
+      background: rgba(239, 68, 68, 0.2);
+      color: #ff6b6b;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .remove-btn:hover {
+      background: rgba(239, 68, 68, 0.3);
+      border-color: rgba(239, 68, 68, 0.5);
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #64748b;
+    }
+    
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+    
+    .error-message {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      font-size: 13px;
+    }
+    
+    .warning-message {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: #fcd34d;
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      font-size: 13px;
+    }
+    
+    .last-updated {
+      text-align: center;
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 16px;
+    }
+  </style>
 </head>
 
-<body style="margin:0;background:#0f172a;font-family:Arial;color:white;">
+<body>
 
-<div style="max-width:600px;margin:auto;padding:20px;">
+<div class="container">
+  <header>
+    <h1>💼 Portfolio Tracker</h1>
+    <p class="subtitle">Guille y Mer - Asset Management</p>
+  </header>
 
-<h1 style="text-align:center;">Portfolio Tracker Flia Guille y Mer</h1>
+  <div id="errorContainer"></div>
+  <div id="warningContainer"></div>
 
-<div style="background:#1e293b;padding:15px;border-radius:12px;margin-bottom:20px;">
-  <input id="name" placeholder="BTC, ETH, AAPL, USD" style="width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:none;">
-  
-  <input id="quantity" type="number" placeholder="Cantidad" style="width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:none;">
+  <div class="input-section">
+    <div class="form-group">
+      <label for="name">Asset Symbol</label>
+      <input id="name" placeholder="e.g., BTC, ETH, AAPL, GOOGL" type="text">
+    </div>
+    
+    <div class="form-group">
+      <label for="quantity">Quantity</label>
+      <input id="quantity" type="number" placeholder="e.g., 1.5" step="any">
+    </div>
 
-  <select id="type" style="width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:none;">
-    <option value="crypto">Crypto</option>
-    <option value="stock">Stock</option>
-    <option value="cash">Cash</option>
-  </select>
+    <div class="form-group">
+      <label for="type">Asset Type</label>
+      <select id="type">
+        <option value="crypto">🪙 Cryptocurrency</option>
+        <option value="stock">📈 Stock</option>
+        <option value="cash">💵 Cash</option>
+      </select>
+    </div>
 
-  <button onclick="addAsset()" style="width:100%;padding:12px;border:none;border-radius:8px;background:#3b82f6;color:white;font-weight:bold;">
-    Agregar
-  </button>
-</div>
+    <button id="addBtn" onclick="addAsset()">Add Asset</button>
+  </div>
 
-<h2>Total: $<span id="total">0</span></h2>
+  <div class="stats-section">
+    <div class="stat-card">
+      <div class="stat-label">Total Assets</div>
+      <div class="stat-value" id="assetCount">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Last Updated</div>
+      <div class="stat-value" id="lastUpdate" style="font-size: 14px;">—</div>
+    </div>
+    <div class="stat-card total-card">
+      <div class="stat-label">Portfolio Value</div>
+      <div class="total-value">$<span id="total">0.00</span></div>
+    </div>
+  </div>
 
-<div id="list"></div>
+  <div class="assets-section">
+    <div class="section-title">
+      Your Assets
+      <div class="status-indicator">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">Ready</span>
+      </div>
+    </div>
+    <div id="list"></div>
+  </div>
 
+  <div class="last-updated">
+    Prices update every minute • Last sync: <span id="syncTime">—</span>
+  </div>
 </div>
 
 <script>
+// Configuration
+const FINNHUB_API_KEY = 'YOUR_FINNHUB_API_KEY_HERE'; // Get free key from https://finnhub.io
+const UPDATE_INTERVAL = 60000; // 1 minute
+
 let assets = JSON.parse(localStorage.getItem("assets") || "[]");
+let isUpdating = false;
 
 const cryptoMap = {
   BTC: "bitcoin",
@@ -55,86 +416,240 @@ function normalizeCrypto(name) {
   return cryptoMap[name] || name.toLowerCase();
 }
 
+function setStatus(message, isLoading = false) {
+  const statusDot = document.getElementById("statusDot");
+  const statusText = document.getElementById("statusText");
+  statusText.textContent = message;
+  if (isLoading) {
+    statusDot.classList.add("loading");
+  } else {
+    statusDot.classList.remove("loading");
+  }
+}
+
+function showError(message) {
+  const container = document.getElementById("errorContainer");
+  container.innerHTML = `<div class="error-message">⚠️ ${message}</div>`;
+  setTimeout(() => {
+    container.innerHTML = "";
+  }, 5000);
+}
+
+function showWarning(message) {
+  const container = document.getElementById("warningContainer");
+  container.innerHTML = `<div class="warning-message">ℹ️ ${message}</div>`;
+  setTimeout(() => {
+    container.innerHTML = "";
+  }, 4000);
+}
+
+function updateTimestamp() {
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  document.getElementById("syncTime").textContent = `${hours}:${minutes}`;
+  document.getElementById("lastUpdate").textContent = `${hours}:${minutes}`;
+}
+
 function render() {
   let list = document.getElementById("list");
   list.innerHTML = "";
   let total = 0;
 
+  if (assets.length === 0) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">📭</div>
+        <div>No assets yet. Add one to get started!</div>
+      </div>
+    `;
+    document.getElementById("total").innerText = "0.00";
+    document.getElementById("assetCount").innerText = "0";
+    return;
+  }
+
   assets.forEach((a, i) => {
     let value = (a.price || 0) * a.quantity;
     total += value;
 
+    let priceDisplay = "";
+    if (a.type === "stock" || a.type === "crypto") {
+      if (a.priceLoading) {
+        priceDisplay = `<div class="price-loading">⟳ Updating...</div>`;
+      } else if (a.priceError) {
+        priceDisplay = `<div class="price-error">✕ Error loading price</div>`;
+      } else {
+        priceDisplay = `<div class="asset-price">$${(a.price || 0).toFixed(2)}</div>`;
+      }
+    } else {
+      priceDisplay = `<div class="asset-price">$${(a.price || 0).toFixed(2)}</div>`;
+    }
+
     list.innerHTML += `
-      <div style="background:#1e293b;padding:15px;margin-bottom:10px;border-radius:12px;display:flex;justify-content:space-between;">
-        <div>
-          <b>${a.symbol}</b><br>
-          ${a.quantity} × $${a.price || 0}
+      <div class="asset-item">
+        <div class="asset-info">
+          <div class="asset-symbol">${a.symbol}</div>
+          <div class="asset-details">${a.quantity} ${a.type === "crypto" ? "coin(s)" : a.type === "stock" ? "share(s)" : "unit(s)"} × $${(a.price || 0).toFixed(2)}</div>
+          <div class="asset-type">${a.type}</div>
         </div>
-        <div style="text-align:right;">
-          $${value.toFixed(2)}<br>
-          <button onclick="removeAsset(${i})" style="margin-top:5px;border:none;background:red;color:white;border-radius:6px;padding:5px 8px;">X</button>
+        <div class="asset-value">
+          ${priceDisplay}
+          <div style="font-size: 14px; color: #a78bfa; margin-bottom: 6px; font-weight: 600;">$${value.toFixed(2)}</div>
+          <button class="remove-btn" onclick="removeAsset(${i})">Remove</button>
         </div>
       </div>
     `;
   });
 
   document.getElementById("total").innerText = total.toFixed(2);
+  document.getElementById("assetCount").innerText = assets.length;
   localStorage.setItem("assets", JSON.stringify(assets));
 }
 
-async function updatePrices() {
-  // Collect all crypto assets
+async function fetchCryptoPrices() {
   let cryptoAssets = assets.filter(a => a.type === "crypto");
   
-  if (cryptoAssets.length > 0) {
-    try {
-      // Batch fetch all crypto prices in one call
-      let ids = cryptoAssets.map(a => a.id).join(",");
-      let res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`);
-      let data = await res.json();
-      
-      // Update prices from response
-      cryptoAssets.forEach(a => {
-        a.price = data[a.id]?.usd || 0;
-      });
-    } catch (error) {
-      console.error("Error fetching crypto prices:", error);
-    }
-  }
+  if (cryptoAssets.length === 0) return;
   
-  // Handle stock prices
+  try {
+    // Mark as loading
+    cryptoAssets.forEach(a => {
+      a.priceLoading = true;
+      a.priceError = false;
+    });
+    render();
+
+    let ids = cryptoAssets.map(a => a.id).join(",");
+    let res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`);
+    
+    if (!res.ok) throw new Error("Failed to fetch crypto prices");
+    
+    let data = await res.json();
+    
+    cryptoAssets.forEach(a => {
+      a.price = data[a.id]?.usd || 0;
+      a.priceLoading = false;
+    });
+  } catch (error) {
+    console.error("Error fetching crypto prices:", error);
+    cryptoAssets.forEach(a => {
+      a.priceError = true;
+      a.priceLoading = false;
+    });
+    showError("Failed to fetch cryptocurrency prices. Check your connection.");
+  }
+}
+
+async function fetchStockPrices() {
   let stockAssets = assets.filter(a => a.type === "stock");
-  for (let a of stockAssets) {
-    try {
-      let res = await fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${a.symbol}`);
-      let data = await res.json();
-      a.price = data.quoteResponse.result[0]?.regularMarketPrice || 0;
-    } catch (error) {
-      console.error("Error fetching stock price:", error);
-    }
+  
+  if (stockAssets.length === 0) return;
+  
+  // Check if API key is configured
+  if (!FINNHUB_API_KEY || FINNHUB_API_KEY === 'YOUR_FINNHUB_API_KEY_HERE') {
+    stockAssets.forEach(a => {
+      a.priceError = true;
+      a.priceLoading = false;
+    });
+    showWarning("Stock prices unavailable: API key not configured. Get one free at finnhub.io");
+    return;
   }
+
+  try {
+    // Mark as loading
+    stockAssets.forEach(a => {
+      a.priceLoading = true;
+      a.priceError = false;
+    });
+    render();
+
+    for (let a of stockAssets) {
+      try {
+        let res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${a.symbol}&token=${FINNHUB_API_KEY}`);
+        
+        if (!res.ok) throw new Error("API request failed");
+        
+        let data = await res.json();
+        
+        if (data.c) {
+          a.price = data.c;
+          a.priceLoading = false;
+        } else {
+          a.priceError = true;
+          a.priceLoading = false;
+        }
+      } catch (error) {
+        console.error(`Error fetching ${a.symbol} price:`, error);
+        a.priceError = true;
+        a.priceLoading = false;
+      }
+    }
+  } catch (error) {
+    console.error("Error in stock price update:", error);
+    showError("Failed to fetch stock prices.");
+  }
+}
+
+async function updatePrices() {
+  if (isUpdating) return;
   
-  // Handle cash
-  let cashAssets = assets.filter(a => a.type === "cash");
-  cashAssets.forEach(a => {
-    a.price = 1;
-  });
-  
-  render();
+  isUpdating = true;
+  setStatus("Updating prices...", true);
+
+  try {
+    // Update crypto and stocks in parallel
+    await Promise.all([
+      fetchCryptoPrices(),
+      fetchStockPrices()
+    ]);
+
+    // Handle cash
+    let cashAssets = assets.filter(a => a.type === "cash");
+    cashAssets.forEach(a => {
+      a.price = 1;
+    });
+
+    render();
+    updateTimestamp();
+    setStatus("Ready");
+  } catch (error) {
+    console.error("Error updating prices:", error);
+    showError("Failed to update prices. Please try again.");
+    setStatus("Error updating");
+  } finally {
+    isUpdating = false;
+  }
 }
 
 function addAsset() {
-  let name = document.getElementById("name").value.trim();
+  let name = document.getElementById("name").value.trim().toUpperCase();
   let type = document.getElementById("type").value;
   let quantity = parseFloat(document.getElementById("quantity").value);
 
-  if (!name || !quantity) return;
+  // Validation
+  if (!name) {
+    showError("Please enter an asset symbol");
+    return;
+  }
+  
+  if (!quantity || quantity <= 0) {
+    showError("Please enter a valid quantity");
+    return;
+  }
+
+  // Check for duplicates
+  if (assets.some(a => a.symbol === name && a.type === type)) {
+    showWarning(`${name} already exists. Modify or delete the existing entry.`);
+    return;
+  }
 
   let asset = {
-    symbol: name.toUpperCase(),
+    symbol: name,
     type,
     quantity,
-    price: 0
+    price: 0,
+    priceLoading: false,
+    priceError: false
   };
 
   if (type === "crypto") {
@@ -144,18 +659,40 @@ function addAsset() {
   assets.push(asset);
   document.getElementById("name").value = "";
   document.getElementById("quantity").value = "";
+  document.getElementById("name").focus();
+  
   render();
   updatePrices();
 }
 
 function removeAsset(i) {
+  const removed = assets[i];
   assets.splice(i, 1);
   render();
+  showWarning(`${removed.symbol} removed from portfolio`);
 }
 
+// Handle Enter key in inputs
+document.getElementById("name").addEventListener("keypress", (e) => {
+  if (e.key === "Enter") document.getElementById("quantity").focus();
+});
+
+document.getElementById("quantity").addEventListener("keypress", (e) => {
+  if (e.key === "Enter") addAsset();
+});
+
+// Initialize
 render();
 updatePrices();
-setInterval(updatePrices, 60000);
+setInterval(updatePrices, UPDATE_INTERVAL);
+
+// Optional: Add keyboard shortcut for quick refresh (Ctrl+R)
+document.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === "r" && !isUpdating) {
+    e.preventDefault();
+    updatePrices();
+  }
+});
 </script>
 
 </body>
