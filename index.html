@@ -83,29 +83,43 @@ function render() {
 }
 
 async function updatePrices() {
-  for (let a of assets) {
-
-    if (a.type === "crypto") {
-      try {
-        let res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${a.id}&vs_currencies=usd`);
-        let data = await res.json();
+  // Collect all crypto assets
+  let cryptoAssets = assets.filter(a => a.type === "crypto");
+  
+  if (cryptoAssets.length > 0) {
+    try {
+      // Batch fetch all crypto prices in one call
+      let ids = cryptoAssets.map(a => a.id).join(",");
+      let res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`);
+      let data = await res.json();
+      
+      // Update prices from response
+      cryptoAssets.forEach(a => {
         a.price = data[a.id]?.usd || 0;
-      } catch {}
-    }
-
-    if (a.type === "stock") {
-      try {
-        let res = await fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${a.symbol}`);
-        let data = await res.json();
-        a.price = data.quoteResponse.result[0]?.regularMarketPrice || 0;
-      } catch {}
-    }
-
-    if (a.type === "cash") {
-      a.price = 1;
+      });
+    } catch (error) {
+      console.error("Error fetching crypto prices:", error);
     }
   }
-
+  
+  // Handle stock prices
+  let stockAssets = assets.filter(a => a.type === "stock");
+  for (let a of stockAssets) {
+    try {
+      let res = await fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${a.symbol}`);
+      let data = await res.json();
+      a.price = data.quoteResponse.result[0]?.regularMarketPrice || 0;
+    } catch (error) {
+      console.error("Error fetching stock price:", error);
+    }
+  }
+  
+  // Handle cash
+  let cashAssets = assets.filter(a => a.type === "cash");
+  cashAssets.forEach(a => {
+    a.price = 1;
+  });
+  
   render();
 }
 
@@ -128,7 +142,10 @@ function addAsset() {
   }
 
   assets.push(asset);
+  document.getElementById("name").value = "";
+  document.getElementById("quantity").value = "";
   render();
+  updatePrices();
 }
 
 function removeAsset(i) {
